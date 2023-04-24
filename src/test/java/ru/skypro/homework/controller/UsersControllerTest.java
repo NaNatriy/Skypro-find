@@ -1,6 +1,5 @@
 package ru.skypro.homework.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,10 +36,7 @@ class UsersControllerTest {
     @Autowired
     private PasswordEncoder encoder;
     @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
     private UserRepository userRepository;
-    private final User user = new User();
     @BeforeEach
     void setUp() {
         User user = new User();

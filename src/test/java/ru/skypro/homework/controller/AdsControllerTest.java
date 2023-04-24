@@ -1,7 +1,6 @@
 
 package ru.skypro.homework.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,8 +36,6 @@ class AdsControllerTest {
     private AdsRepository adsRepository;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private ObjectMapper objectMapper;
     @Autowired
     private PasswordEncoder encoder;
     private final MockPart image = new MockPart("image", "image", "image".getBytes());
