@@ -20,6 +20,6 @@ public class Ads {
     private byte[] image;
     @ManyToOne(fetch = FetchType.LAZY)
     private User author;
-    @OneToMany(mappedBy = "ads", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "ads", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Comment> comments;
 }

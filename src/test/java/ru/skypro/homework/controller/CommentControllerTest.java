@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.dto.commentDTO.CommentDTO;
 import ru.skypro.homework.model.Ads;
@@ -29,9 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
+@Testcontainers
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class CommentControllerTest {
     @Autowired
     private MockMvc mockMvcComment;
@@ -42,7 +42,7 @@ class CommentControllerTest {
     @Autowired
     private AdsRepository adsRepository;
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository UserRepository;
     @Autowired
     private CommentRepository commentRepository;
     private final User user = new User();
@@ -52,16 +52,16 @@ class CommentControllerTest {
     @BeforeEach
     void setUp() {
         user.setUsername("username");
-        user.setFirstName("name");
-        user.setLastName("name");
-        user.setPhone("+78346767878");
+        user.setFirstName("firstname");
+        user.setLastName("lastname");
+        user.setPhone("+79999999999");
         user.setPassword(encoder.encode("password"));
         user.setEnabled(true);
         user.setRole(Role.USER);
-        userRepository.save(user);
+        UserRepository.save(user);
 
         ads.setPrice(200);
-        ads.setDescription("description");
+        ads.setDescription("about");
         ads.setTitle("title");
         ads.setAuthor(user);
         adsRepository.save(ads);
@@ -74,10 +74,10 @@ class CommentControllerTest {
     }
 
     @AfterEach
-    void clear() {
+    void tearDown() {
         commentRepository.deleteAll();
         adsRepository.deleteAll();
-        userRepository.deleteAll();
+        UserRepository.deleteAll();
     }
 
     @Test
@@ -111,8 +111,15 @@ class CommentControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "username2", password = "password")
+    void deleteComment_withOtherUser() throws Exception {
+        mockMvcComment.perform(delete("/ads/" + ads.getPk() + "/comments/" + comment.getPk()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(username = "username2", password = "password", roles = "ADMIN")
-    void deleteCommentA() throws Exception {
+    void deleteComment_withRoleAdmin() throws Exception {
         mockMvcComment.perform(delete("/ads/" + ads.getPk() + "/comments/" + comment.getPk()))
                 .andExpect(status().isOk());
     }
@@ -130,8 +137,19 @@ class CommentControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "username2", password = "password")
+    void updateComment_withOtherUser() throws Exception {
+        mockMvcComment.perform(patch("/ads/" + ads.getPk() + "/comments/" + comment.getPk())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\n" +
+                                "  \"text\": \"newText\"\n" +
+                                "}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithMockUser(username = "username2", password = "password", roles = "ADMIN")
-    void updateCommentA() throws Exception {
+    void updateComment_withRoleAdmin() throws Exception {
         mockMvcComment.perform(patch("/ads/" + ads.getPk() + "/comments/" + comment.getPk())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\n" +

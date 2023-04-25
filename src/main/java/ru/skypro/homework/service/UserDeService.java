@@ -15,18 +15,18 @@ import ru.skypro.homework.repository.UserRepository;
 public class UserDeService implements UserDetailsManager {
 
     private final PasswordEncoder encoder;
-    private final UserRepository userRepository;
+    private final UserRepository UserRepository;
 
-    public UserDeService(PasswordEncoder encoder, UserRepository userRepository) {
+    public UserDeService(PasswordEncoder encoder, UserRepository UserRepository) {
         this.encoder = encoder;
-        this.userRepository = userRepository;
+        this.UserRepository = UserRepository;
     }
 
     @Override
     public void createUser(UserDetails user) {
         User saveUser = UserMapper.userDetailsDtoToUser((UserDetailsDTO) user);
         saveUser.setPassword(encoder.encode(user.getPassword()));
-        userRepository.save(saveUser);
+        UserRepository.save(saveUser);
     }
 
     @Override
@@ -46,11 +46,11 @@ public class UserDeService implements UserDetailsManager {
 
     @Override
     public boolean userExists(String username) {
-        return userRepository.existsByUsername(username);
+        return UserRepository.existsByUsername(username);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return UserMapper.userToUserDetailsDto(userRepository.findByUsername(username).orElseThrow(NotFoundException::new));
+        return UserMapper.userToUserDetailsDto(UserRepository.findByUsername(username).orElseThrow(NotFoundException::new));
     }
 }

@@ -22,9 +22,9 @@ public class User {
     private Boolean enabled;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToMany(mappedBy = "author", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "author", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Ads> ads;
-    @OneToMany(mappedBy = "author", cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "author", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Comment> comments;
 
 }

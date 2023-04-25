@@ -5,7 +5,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -16,19 +15,20 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.skypro.homework.dto.Role;
+import ru.skypro.homework.dto.userDTO.UserDTO;
+import ru.skypro.homework.exception.NotFoundException;
+import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.model.User;
 import ru.skypro.homework.repository.UserRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @AutoConfigureMockMvc
 @Testcontainers
 @SpringBootTest
-@AutoConfigureJson
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class UsersControllerTest {
 
@@ -39,24 +39,24 @@ class UsersControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository UserRepository;
     private final User user = new User();
     @BeforeEach
     void setUp() {
-        User user = new User();
         user.setUsername("username");
-        user.setFirstName("name");
-        user.setLastName("name");
-        user.setPhone("+78346767878");
+        user.setFirstName("firstname");
+        user.setLastName("lastname");
+        user.setPhone("+79999999999");
         user.setPassword(encoder.encode("password"));
         user.setEnabled(true);
         user.setRole(Role.USER);
-        userRepository.save(user);
+        user.setImage("userAvatar".getBytes());
+        UserRepository.save(user);
     }
 
     @AfterEach
     void tearDown() {
-        userRepository.deleteAll();
+        UserRepository.deleteAll();
     }
 
     @Test
@@ -66,8 +66,8 @@ class UsersControllerTest {
         mockMvcUsers.perform(post("/users/set_password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\n" +
-                                "  \"currentPassword\": \"password\",\n" +
-                                "  \"newPassword\": \"password2\"\n" +
+                                "  \"newPassword\": \"qwer1234\",\n" +
+                                "  \"currentPassword\": \"password\"\n" +
                                 "}"))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -83,6 +83,19 @@ class UsersControllerTest {
 
     @Test
     @WithMockUser(username = "username", password = "password")
+    void updateUser() throws Exception {
+        UserDTO userDTO = UserMapper.userToUserDto(UserRepository.findByUsername(user.getUsername()).orElseThrow(NotFoundException::new));
+        userDTO.setEmail("username2");
+        mockMvcUsers.perform(patch("/users/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userDTO.getId()))
+                .andExpect(jsonPath("$.email").value("username2"));
+    }
+
+    @Test
+    @WithMockUser(username = "username", password = "password")
     void updateUserImage() throws Exception {
         MockPart image = new MockPart("image", "avatar", "userAvatar".getBytes());
         mockMvcUsers.perform(patch("/users/me/image")
@@ -92,5 +105,15 @@ class UsersControllerTest {
                     return request;
                 }))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "username", password = "password")
+    void showAvatarOnId() throws Exception {
+        User testUser = UserRepository.findByUsername(user.getUsername()).orElseThrow(NotFoundException::new);
+        mockMvcUsers.perform(get("/users/me/image/" + testUser.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes("userAvatar".getBytes()));
+
     }
 }

@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset natriy : 2
+--changeset natriy : 3
 create table comment
 (
     pk         SERIAL PRIMARY KEY ,

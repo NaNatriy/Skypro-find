@@ -24,8 +24,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
             "/login",
             "/register",
             "/ads",
-            "/ads/image/**",
-            "/ads/search"
+            "/ads/image/**"
     };
 
     @Override

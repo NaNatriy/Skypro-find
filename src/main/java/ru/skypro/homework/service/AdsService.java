@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 @Service
 public class AdsService {
     private final AdsRepository adsRepository;
-    private final UserRepository userRepository;
+    private final UserRepository UserRepository;
 
-    public AdsService(AdsRepository adsRepository, UserRepository userRepository) {
+    public AdsService(AdsRepository adsRepository, UserRepository UserRepository) {
         this.adsRepository = adsRepository;
-        this.userRepository = userRepository;
+        this.UserRepository = UserRepository;
     }
 
     public ResponseWrapper<AdsDTO> getAll() {
@@ -43,7 +43,7 @@ public class AdsService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        User user = userRepository.findByUsername(authentication.getName()).orElseThrow(NotFoundException::new);
+        User user = UserRepository.findByUsername(authentication.getName()).orElseThrow(NotFoundException::new);
         ads.setAuthor(user);
         return AdsMapper.adToAdDto(adsRepository.saveAndFlush(ads));
     }
@@ -69,7 +69,7 @@ public class AdsService {
 
     public ResponseWrapper<AdsDTO> getMyAds(Authentication authentication) {
         ResponseWrapper<AdsDTO> wrap = new ResponseWrapper<>();
-        User user = userRepository.findByUsername(authentication.getName()).orElseThrow(NotFoundException::new);
+        User user = UserRepository.findByUsername(authentication.getName()).orElseThrow(NotFoundException::new);
         wrap.setResults(adsRepository.findAllByAuthorId(user.getId()).stream().map(AdsMapper::adToAdDto).collect(Collectors.toList()));
         wrap.setCount(wrap.getResults().size());
         return wrap;
