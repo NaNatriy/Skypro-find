@@ -1,6 +1,7 @@
 package ru.skypro.homework.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.skypro.homework.dto.Role;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "users")
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +29,9 @@ public class User {
     @OneToMany(mappedBy = "author", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Comment> comments;
 
+    public User(String username,
+                String password) {
+        this.username = username;
+        this.password = password;
+    }
 }

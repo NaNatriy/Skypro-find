@@ -44,6 +44,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                                 authorization
                                         .mvcMatchers(AUTH_WHITELIST)
                                         .permitAll()
+                                        .antMatchers("/avatars/**").permitAll()
                                         .mvcMatchers("/ads/**", "/users/**")
                                         .authenticated())
                 .cors()

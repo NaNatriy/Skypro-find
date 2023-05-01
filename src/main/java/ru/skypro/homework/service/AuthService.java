@@ -5,13 +5,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.dto.userDTO.RegisterReq;
+import ru.skypro.homework.dto.userDTO.UserDetailsDTO;
 import ru.skypro.homework.exception.NotFoundException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.model.User;
 
 
 @Service
-public class AuthService{
+public class AuthService {
 
     private final UserDeService manager;
 
@@ -36,7 +37,8 @@ public class AuthService{
         registerReq.setPhone(registerReq.getPhone());
         User user = UserMapper.reqRegToUser(registerReq);
         user.setRole(Role.USER);
-        manager.createUser(UserMapper.userToUserDetailsDto(user));
+        UserDetailsDTO userDetailsDTO = new UserDetailsDTO(user);
+        manager.createUser(userDetailsDTO);
         return true;
     }
 }

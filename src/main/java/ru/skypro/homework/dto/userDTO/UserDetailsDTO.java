@@ -5,7 +5,7 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.skypro.homework.dto.Role;
+import ru.skypro.homework.model.User;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,18 +13,15 @@ import java.util.List;
 @Data
 public class UserDetailsDTO implements UserDetails {
 
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String phone;
-    private String password;
-    private String image;
-    private boolean enabled;
-    private Role role;
+    private User user;
+
+    public UserDetailsDTO(User user) {
+        this.user = user;
+    }
 
     @Override
     public String getUsername() {
-        return username;
+        return user.getUsername();
     }
 
     @JsonIgnore
@@ -48,19 +45,19 @@ public class UserDetailsDTO implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
     @JsonIgnore
     @Override
     public String getPassword() {
-        return password;
+        return user.getPassword();
     }
 
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return user.getEnabled();
     }
 
 }

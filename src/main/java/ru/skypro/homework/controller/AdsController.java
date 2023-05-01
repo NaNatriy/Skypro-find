@@ -16,6 +16,7 @@ import ru.skypro.homework.dto.adsDTO.AdsDTO;
 import ru.skypro.homework.dto.adsDTO.CreateAdsDTO;
 import ru.skypro.homework.dto.adsDTO.FullAds;
 import ru.skypro.homework.dto.commentDTO.CommentDTO;
+import ru.skypro.homework.model.Comment;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.CommentsService;
 
@@ -175,8 +176,8 @@ public class AdsController {
             }
     )
     @PostMapping("/{id}/comments")
-    public CommentDTO addComment(@PathVariable Integer id, @RequestBody CommentDTO commentDTO, Authentication authentication) {
-        return commentsService.addComment(id, commentDTO, authentication);
+    public CommentDTO addComment(@PathVariable Integer id, @RequestBody Comment comment, Authentication authentication) {
+        return commentsService.addComment(id, comment, authentication);
     }
 
     @Operation(

@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 @Service
 public class CommentsService {
     private final CommentRepository commentRepository;
-    private final UserRepository UserRepository;
+    private final UserRepository userRepository;
     private final AdsRepository adsRepository;
 
     public CommentsService(CommentRepository commentRepository, UserRepository UserRepository, AdsRepository adsRepository) {
         this.commentRepository = commentRepository;
-        this.UserRepository = UserRepository;
+        this.userRepository = UserRepository;
         this.adsRepository = adsRepository;
     }
 
@@ -34,9 +34,8 @@ public class CommentsService {
         return wrapper;
     }
 
-    public CommentDTO addComment(Integer id, CommentDTO commentDTO, Authentication authentication) {
-        Comment comment = CommentMapper.commentDtoToComment(commentDTO);
-        User user = UserRepository.findByUsername(authentication.getName()).orElseThrow(NotFoundException::new);
+    public CommentDTO addComment(Integer id, Comment comment, Authentication authentication) {
+        User user = userRepository.findByUsername(authentication.getName()).orElseThrow(NotFoundException::new);
         comment.setAuthor(user);
         comment.setAds(adsRepository.findById(id).orElseThrow(NotFoundException::new));
         commentRepository.save(comment);
