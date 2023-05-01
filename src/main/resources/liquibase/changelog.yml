@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: liquibase/changesets/users.sql
+  - include:
+      file: liquibase/changesets/ads.sql
+  - include:
+      file: liquibase/changesets/comment.sql
